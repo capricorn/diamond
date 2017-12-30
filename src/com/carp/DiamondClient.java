@@ -10,55 +10,53 @@ import com.sun.tools.jdi.SocketAttachingConnector;
 
 import javax.swing.*;
 import java.applet.Applet;
-import java.awt.*;
 import java.io.*;
-import java.lang.reflect.Field;
-import java.net.Socket;
 import java.net.URL;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class DiamondClient {
-    private Hashtable<String, byte[]> gamepackClasses;
-    private Hashtable<String, String> gamepackParams;
-
     private static final String baseUrl = "http://oldschool5.runescape.com/";
     private static final String tmpJarFile = "/tmp/tmp.jar";
 
-    public Loader loader;
+    // Why not just leave this to the loader?
+    private Hashtable<String, byte[]> gamepackClasses;
+    private GamepackParameters gamepackParams = new GamepackParameters();
+    //private Loader loader;
+
+    private Hashtable<String, byte[]> getGamepackClasses() {
+        try {
+            if (new File(tmpJarFile).exists()) {
+                System.out.printf("Reading gamepack classes from %s.\n", tmpJarFile);
+                return readJarFile(tmpJarFile);
+            }
+            return downloadJar(gamepackParams.getInitialJar());
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read gamepack classes.");
+        }
+    }
 
     public void run() {
         Thread.currentThread().setName("Diamond");
         try {
-            gamepackParams = getParams();
-            if (new File("/tmp/tmp.jar").exists()) {
-                System.out.println("Reading /tmp/tmp.jar.");
-                gamepackClasses = readJarFile("/tmp/tmp.jar");
-            } else {
-                gamepackClasses = downloadJar(gamepackParams.get("initial_jar"));
-            }
-            loader = new Loader(gamepackClasses);
-            LoaderStub stub = new LoaderStub(gamepackParams);
+            gamepackClasses = getGamepackClasses();
 
             JFrame clientWindow = new JFrame("\uD83D\uDC8E");
 
-            Applet client = (Applet) loader.loadClass("client").newInstance();
+            Applet client = (Applet) new Loader(gamepackClasses).loadClass("client").newInstance();
 
             clientWindow.add(client);
 
-            client.setStub(stub);
-            client.setSize(750, 750);
+            client.setStub(new LoaderStub(gamepackParams));
+            client.setSize(gamepackParams.getAppletWidth(), gamepackParams.getAppletHeight());
             client.setVisible(true);
             client.init();
             client.start();
 
-            //clientWindow.pack();
-            clientWindow.setSize(750, 750);
+            clientWindow.setSize(gamepackParams.getWindowWidth(), gamepackParams.getWindowHeight());
             clientWindow.setLocationRelativeTo(null);
             clientWindow.setVisible(true);
-
-
 
             // Start debug field info gui window
             new Thread(new FieldInfoGUI(client)).start();
@@ -82,6 +80,7 @@ public class DiamondClient {
             resumeWorkingThreads(vm);
             */
 
+            /*
             Thread.sleep(25000);
             String tmp = "";
             PrintWriter log = new PrintWriter("/tmp/chat.txt");
@@ -105,6 +104,7 @@ public class DiamondClient {
                 log.write(message);
                 Thread.sleep(10);
             }
+            */
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -139,31 +139,6 @@ public class DiamondClient {
             }
         }
         throw new IOException("Failed to locate socket attaching connector.");
-    }
-
-    public static Hashtable<String, String> getParams() throws IOException {
-        System.out.println("Obtaining jav_config.ws parameters.");
-        InputStream data = new URL(baseUrl + "jav_config.ws").openStream();
-        Scanner s = new Scanner(data);
-        Hashtable<String, String> gamepackParams = new Hashtable<>();
-
-        while (s.hasNext()) {
-            String str = s.next();
-            if (str.startsWith("initial_jar")) {
-                String[] gamepack = str.split("=", 2);
-                gamepackParams.put("initial_jar", gamepack[1]);
-            }
-            if (!str.startsWith("param")) {
-                continue;
-            }
-            // Ignore any extra equal signs that may appear
-            String[] params = str.split("=", 3);
-            gamepackParams.put(params[1], params[2]);
-            System.out.printf("%2s: %s\n", params[1], params[2]);
-        }
-        System.out.println("");
-        s.close();
-        return gamepackParams;
     }
 
     private static Hashtable<String, byte[]> readJarFile(String jarFilename) throws IOException{

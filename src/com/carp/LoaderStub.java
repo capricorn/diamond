@@ -14,20 +14,19 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 public class LoaderStub extends JFrame implements AppletStub, AppletContext {
-    Hashtable<String, String> params;
-    public LoaderStub(Hashtable<String, String> params) {
+    private GamepackParameters params;
+
+    public LoaderStub(GamepackParameters params) {
         this.params = params;
     }
 
     public URL getDocumentBase() {
-        System.out.println("Get doc base");
         try {
-            //return new File("/Users/cap/prog/java/diamond/data/gamepack_5961714.jar").toURI().toURL();
-            return new URL("http://oldschool5.runescape.com/");
+            //return new URL("http://oldschool5.runescape.com/");
+            return new URL(params.get("codebase"));
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     public URL getCodeBase() {
@@ -59,7 +58,6 @@ public class LoaderStub extends JFrame implements AppletStub, AppletContext {
     public void appletResize(int width, int height) {
         System.out.printf("Resizing applet: %dx%d ", width, height);
         setSize(width, height);
-        return;
     }
 
     public AudioClip getAudioClip(URL u) {
@@ -78,7 +76,6 @@ public class LoaderStub extends JFrame implements AppletStub, AppletContext {
     }
 
     public void showDocument(URL u, String s) {
-        return;
     }
 
     public Applet getApplet(String name) {
