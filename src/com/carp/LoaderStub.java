@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 public class LoaderStub extends JFrame implements AppletStub, AppletContext {
@@ -22,7 +21,6 @@ public class LoaderStub extends JFrame implements AppletStub, AppletContext {
 
     public URL getDocumentBase() {
         try {
-            //return new URL("http://oldschool5.runescape.com/");
             return new URL(params.get("codebase"));
         } catch (MalformedURLException e) {
             return null;
@@ -54,7 +52,6 @@ public class LoaderStub extends JFrame implements AppletStub, AppletContext {
         return params.get(name);
     }
 
-    // Needs testing
     public void appletResize(int width, int height) {
         System.out.printf("Resizing applet: %dx%d ", width, height);
         setSize(width, height);
@@ -89,30 +86,5 @@ public class LoaderStub extends JFrame implements AppletStub, AppletContext {
     public AppletContext getAppletContext() {
         System.out.println("Get applet context");
         return this;
-    }
-
-    public void run(Hashtable<String, byte[]> classFileData) {
-        setTitle("Diamond Client");
-
-        setSize(500, 500);
-        Loader loader = new Loader(classFileData);
-
-        try {
-            Applet client = (Applet) loader.loadClass("client").newInstance();
-            System.out.println("Applet loaded.");
-            add(client);
-            client.setStub(this);
-            client.init();
-            client.start();
-            client.setVisible(true);
-            pack();
-            client.setSize(1000,1000);
-            //setVisible(true);
-            //client.setSize(500, 500);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Had a problem trying to run the applet..");
-        }
     }
 }
