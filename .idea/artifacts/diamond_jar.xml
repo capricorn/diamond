@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="diamond:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/diamond_jar</output-path>
+    <root id="archive" name="diamond.jar">
+      <element id="module-output" name="diamond" />
+    </root>
+  </artifact>
+</component>
