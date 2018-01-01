@@ -1,6 +1,7 @@
 package com.carp;
 
 import java.applet.Applet;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 
 public class DiamondAPI {
     private Applet app;
+    private GamepackParameters gamepackParams;
     private static int HP_INDEX = 3;
     private static HashMap<String, String> hookMap = new HashMap<String, String>() {
         {
@@ -24,8 +26,27 @@ public class DiamondAPI {
         }
     };
 
-    public DiamondAPI(Applet app) {
+    private DiamondAPI(Applet app, GamepackParameters gamepackParams) {
         this.app = app;
+        this.gamepackParams = gamepackParams;
+    }
+    //private DiamondAPI() {}
+
+    // Is this necessary, or should you just add the code
+    // in the constructor?
+    public static DiamondAPI init() {
+        try {
+            GamepackParameters gamepackParams = new GamepackParameters();
+            Applet client = (Applet) new Loader(gamepackParams.getInitialJar()).loadClass("client").newInstance();
+            return new DiamondAPI(client, gamepackParams);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize API");
+        }
+    }
+
+    public void runClient() {
+        // Could probably just be integrated here..
+        DiamondClient.run(app, gamepackParams);
     }
 
     private Object getHook(String key) {

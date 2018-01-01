@@ -31,6 +31,7 @@ public class GamepackParameters {
                     gamepackParams.put(type, param.substring(param.indexOf("=")+1));
                 }
             }
+            System.out.println(gamepackParams);
         } catch (IOException e) {
             throw new RuntimeException("Failed to retrieve parameters from site.");
         }
