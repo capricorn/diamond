@@ -2,7 +2,8 @@ package com.carp;
 
 public class Main {
     public static void main(String[] args) {
-        DiamondClient diamondClient = new DiamondClient();
-        //diamondClient.run();
+        DiamondAPI bot = DiamondAPI.init();
+        new Thread(new FieldInfoGUI(bot.getApplet())).start();
+        bot.runClient();
     }
 }

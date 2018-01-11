@@ -1,12 +1,9 @@
 package com.carp;
 
 import java.applet.Applet;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class DiamondAPI {
@@ -30,10 +27,11 @@ public class DiamondAPI {
         this.app = app;
         this.gamepackParams = gamepackParams;
     }
-    //private DiamondAPI() {}
 
-    // Is this necessary, or should you just add the code
-    // in the constructor?
+    public Applet getApplet() {
+        return this.app;
+    }
+
     public static DiamondAPI init() {
         try {
             GamepackParameters gamepackParams = new GamepackParameters();
@@ -51,23 +49,12 @@ public class DiamondAPI {
 
     private Object getHook(String key) {
         String hookPath[] = hookMap.get(key).split("\\.");
-        //System.out.println(Arrays.toString(hookPath));
         Object object = app;
         for (String hookObj : hookPath) {
             try {
                 Integer arrayIndex = Integer.parseInt(hookObj);
                 // Assumed that the object we fetched is an array
                 object = Array.get(object, arrayIndex);
-                //System.out.println(hookObj);
-                //System.out.println(arrayIndex);
-                /*
-                if (arrayIndex == null) {
-                    object = getDeclaredField(object, hookObj);
-                } else {
-                    // Assumed that the object we fetched is an array
-                    object = Array.get(object, arrayIndex);
-                }
-                */
             } catch (NumberFormatException e) {
                 object = getDeclaredField(object, hookObj);
             } catch (NullPointerException e) {
@@ -105,18 +92,8 @@ public class DiamondAPI {
         return stats[HP_INDEX];
     }
 
-    public void setHP(int value) {
-        int[] stats = getCurrentStats();
-        stats[HP_INDEX] = value;
-        setDeclaredField(app, "ie", stats);
-    }
-
     public String getClanChat() {
         return (String) getHook("cc_owner");
-    }
-
-    public void setClanChat(String chatname) {
-        setDeclaredField(app, "ng", chatname);
     }
 
     private void setDeclaredField(Object parent, String field, Object value) {
