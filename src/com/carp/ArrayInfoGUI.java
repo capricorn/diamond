@@ -10,9 +10,9 @@ public class ArrayInfoGUI extends AbstractTableModel implements Runnable {
     public static int VALUE = 2;
     private Object[][] data;
     private static String[] columnNames = {
-            "index",
-            "type",
-            "value",
+            "Index",
+            "Type",
+            "Value",
     };
 
     @Override

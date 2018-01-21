@@ -21,11 +21,11 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
     private Object app;
 
     private static String[] columnNames = {
-            "index",
-            "class",
-            "type",
-            "field",
-            "value",
+            "Index",
+            "Class",
+            "Type",
+            "Field",
+            "Value",
     };
 
     public FieldInfoGUI(Object app) {
