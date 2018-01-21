@@ -44,7 +44,7 @@ public class FieldInfoListener implements MouseListener {
 
             // Display the object in a new window.
             if (col == FieldInfoGUI.FIELD_NAME) {
-                FieldInfoGUI.handleFieldClick(table.getValueAt(row, FieldInfoGUI.VALUE), table.getColumnCount());
+                FieldInfoGUI.handleFieldClick(table.getValueAt(row, FieldInfoGUI.VALUE));
             }
                 /*
                 Object obj = table.getValueAt(row, FieldInfoGUI.VALUE);

@@ -87,7 +87,7 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
         fireTableCellUpdated(row, col);
     }
 
-    public static void handleFieldClick(Object obj, int colCount) {
+    public static void handleFieldClick(Object obj) {
         if (obj == null) {
             return;
         }

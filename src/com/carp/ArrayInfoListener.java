@@ -18,7 +18,7 @@ public class ArrayInfoListener implements MouseListener {
             int col = table.getSelectedColumn();
 
             if (col == ArrayInfoGUI.VALUE) {
-                FieldInfoGUI.handleFieldClick(table.getValueAt(row, col), table.getColumnCount());
+                FieldInfoGUI.handleFieldClick(table.getValueAt(row, col));
             }
         }
     }
