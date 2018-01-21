@@ -12,19 +12,20 @@ import java.util.HashMap;
 public class FieldInfoGUI extends AbstractTableModel implements Runnable {
     private Object[][] data;
     private Field[] fields;
-    private static int CLASS_NAME = 0;
-    public static int TYPE = 1;
-    public static int FIELD_NAME = 2;
-    public static int VALUE = 3;
-    private static int INDEX = 4;
+    private static int INDEX = 0;
+    private static int CLASS_NAME = 1;
+    public static int TYPE = 2;
+    public static int FIELD_NAME = 3;
+    public static int VALUE = 4;
+
     private Object app;
 
     private static String[] columnNames = {
+            "index",
             "class",
             "type",
             "field",
             "value",
-            "index",
     };
 
     public FieldInfoGUI(Object app) {
