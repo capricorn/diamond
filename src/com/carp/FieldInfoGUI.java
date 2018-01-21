@@ -91,44 +91,11 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
         if (obj == null) {
             return;
         }
-        // If object is an array
-        boolean isArray = obj.getClass().isArray();
-        // If array has primitive elements
-        boolean hasPrimitiveElements = isArray ? obj.getClass().getComponentType().isPrimitive(): false;
-        // If class itself is primitive
-        boolean isPrimitive = obj.getClass().isPrimitive();
-        System.out.println(obj.getClass().getName());
 
-        // Treat it as a field
-        if (!isArray && !isPrimitive) {
-            System.out.println("Not an array, and not primitive.");
+        if (obj.getClass().isArray()) {
+            new Thread(new ArrayInfoGUI(obj)).start();
+        } else {
             new Thread(new FieldInfoGUI(obj)).start();
-            return;
-        }
-
-        if (isArray && hasPrimitiveElements) {
-            System.out.println("Array with primitive elements.");
-            Object[][] data = new Object[Array.getLength(obj)][colCount];
-
-            for (int i = 0; i < Array.getLength(obj); i++) {
-                System.out.println(obj.getClass().getComponentType().getName());
-                System.out.println(Array.get(obj, i));
-                data[i][0] = obj.getClass().getComponentType().getName();
-                data[i][1] = Array.get(obj, i);
-                data[i][ArrayInfoGUI.INDEX] = i;
-            }
-            new Thread(new ArrayInfoGUI(data)).start();
-        } else if (obj.getClass().isArray()) {
-            System.out.println("Array with non-primitive elements.");
-            Object[] objects = (Object[]) obj;
-            Object[][] data = new Object[objects.length][colCount];
-            for (int i = 0; i < data.length; i++) {
-                // Populate first column with just the objects
-                data[i][0] = obj.getClass().getComponentType();
-                data[i][1] = objects[i];
-                data[i][ArrayInfoGUI.INDEX] = i;
-            }
-            new Thread(new ArrayInfoGUI(data)).start();
         }
     }
 
