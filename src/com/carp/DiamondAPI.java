@@ -1,10 +1,20 @@
 package com.carp;
 
+import com.sun.jdi.Bootstrap;
+import com.sun.jdi.ThreadReference;
+import com.sun.jdi.VirtualMachine;
+import com.sun.jdi.connect.AttachingConnector;
+import com.sun.jdi.connect.Connector;
+import com.sun.jdi.connect.IllegalConnectorArgumentsException;
+import com.sun.tools.jdi.SocketAttachingConnector;
+
 import java.applet.Applet;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Map;
 
 public class DiamondAPI {
     private Applet app;
@@ -115,5 +125,35 @@ public class DiamondAPI {
             e.printStackTrace();
             return null;
         }
+    }
+    // Used for examining the client tree at a given state.
+    private void pauseWorkingThreads(VirtualMachine vm) {
+        try {
+            for (ThreadReference thread : vm.allThreads()) {
+                if (!thread.name().equals("Diamond") && !thread.name().equals("JDI Target VM Interface")) {
+                    thread.suspend();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void resumeWorkingThreads(VirtualMachine vm) {
+        for (ThreadReference thread : vm.allThreads()) {
+            thread.resume();
+        }
+    }
+
+    public static VirtualMachine attach() throws IOException, IllegalConnectorArgumentsException {
+        for (AttachingConnector conn : Bootstrap.virtualMachineManager().attachingConnectors()) {
+            if (conn instanceof SocketAttachingConnector) {
+                Map<String, Connector.Argument> args = conn.defaultArguments();
+                args.get("hostname").setValue("localhost");
+                args.get("port").setValue("5739");
+                return conn.attach(args);
+            }
+        }
+        throw new IOException("Failed to locate socket attaching connector.");
     }
 }
