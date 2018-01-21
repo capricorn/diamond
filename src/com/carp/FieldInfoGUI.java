@@ -11,17 +11,13 @@ import java.util.HashMap;
 
 public class FieldInfoGUI extends AbstractTableModel implements Runnable {
     private Object[][] data;
+    private Field[] fields;
     private static int CLASS_NAME = 0;
     public static int TYPE = 1;
     public static int FIELD_NAME = 2;
     public static int VALUE = 3;
     private static int INDEX = 4;
-    //private Applet app;
     private Object app;
-
-    private static HashMap<String, Integer> multipliers = new HashMap<String, Integer>() {{
-        put("lz", -1963790127);
-    }};
 
     private static String[] columnNames = {
             "class",
@@ -31,20 +27,15 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
             "index",
     };
 
-    //public FieldInfoGUI(Applet app) {
     public FieldInfoGUI(Object app) {
         this.app = app;
+        fields = app.getClass().getDeclaredFields();
         // row x column
-        //data = new Object[this.app.getClass().getDeclaredFields().length][columnNames.length];
-        data = new Object[this.app.getClass().getDeclaredFields().length][columnNames.length];
-        //data = new Object[this.app.getClass().getFields().length][columnNames.length];
+        data = new Object[fields.length][columnNames.length];
     }
 
     @Override
     public String getColumnName(int column) {
-        if (column > getColumnCount()) {
-            return "";
-        }
         return columnNames[column];
     }
 
@@ -59,30 +50,19 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
     */
 
     private void updateTable() {
-        Field[] fields = app.getClass().getDeclaredFields();
-        //Field[] fields = app.getClass().getFields();
-        // rename i to row
-        for (int i = 0; i < fields.length; i++) {
-            setValueAt(i, i, INDEX);
-            fields[i].setAccessible(true);
-            int multiplier = 1;
-            if (multipliers.containsKey(fields[i].getName())) {
-                multiplier = multipliers.get(fields[i].getName());
-            }
-            setValueAt(app.getClass().getName(), i, CLASS_NAME);
-            setValueAt(fields[i].getName(), i, FIELD_NAME);
-            setValueAt(fields[i].getType().getName(), i, TYPE);
+        for (int row = 0; row < getRowCount(); row++) {
+            Field field = fields[row];
+            field.setAccessible(true);
+            // Set each row value, use as an index when viewing.
+            setValueAt(row, row, INDEX);
+            setValueAt(app.getClass().getName(), row, CLASS_NAME);
+            setValueAt(field.getName(), row, FIELD_NAME);
+            setValueAt(field.getType().getName(), row, TYPE);
             try {
-                if (fields[i].getType() == int.class) {
-                    setValueAt((int) fields[i].get(app) * multiplier, i, VALUE);
-                } else if (fields[i].getType() == String.class && fields[i].get(app) == null) {
-                    setValueAt("null", i, VALUE);
-                } else {
-                    setValueAt(fields[i].get(app), i, VALUE);
-                }
+                setValueAt((field.get(app) == null) ? "null" : field.get(app), row, VALUE);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
-                setValueAt("ERROR", i, VALUE);
+                setValueAt("ERROR", row, VALUE);
             }
         }
     }
