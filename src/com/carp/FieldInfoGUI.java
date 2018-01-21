@@ -15,6 +15,7 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
     public static int TYPE = 1;
     public static int FIELD_NAME = 2;
     public static int VALUE = 3;
+    private static int INDEX = 4;
     //private Applet app;
     private Object app;
 
@@ -27,12 +28,14 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
             "type",
             "field",
             "value",
+            "index",
     };
 
     //public FieldInfoGUI(Applet app) {
     public FieldInfoGUI(Object app) {
         this.app = app;
         // row x column
+        //data = new Object[this.app.getClass().getDeclaredFields().length][columnNames.length];
         data = new Object[this.app.getClass().getDeclaredFields().length][columnNames.length];
         //data = new Object[this.app.getClass().getFields().length][columnNames.length];
     }
@@ -60,6 +63,7 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
         //Field[] fields = app.getClass().getFields();
         // rename i to row
         for (int i = 0; i < fields.length; i++) {
+            setValueAt(i, i, INDEX);
             fields[i].setAccessible(true);
             int multiplier = 1;
             if (multipliers.containsKey(fields[i].getName())) {
@@ -131,6 +135,7 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
                 System.out.println(Array.get(obj, i));
                 data[i][0] = obj.getClass().getComponentType().getName();
                 data[i][1] = Array.get(obj, i);
+                data[i][ArrayInfoGUI.INDEX] = i;
             }
             new Thread(new ArrayInfoGUI(data)).start();
         } else if (obj.getClass().isArray()) {
@@ -141,6 +146,7 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
                 // Populate first column with just the objects
                 data[i][0] = obj.getClass().getComponentType();
                 data[i][1] = objects[i];
+                data[i][ArrayInfoGUI.INDEX] = i;
             }
             new Thread(new ArrayInfoGUI(data)).start();
         }

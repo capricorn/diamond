@@ -4,12 +4,14 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
 public class ArrayInfoGUI extends AbstractTableModel implements Runnable {
-    public static int INDEX = 0;
+    public static int TYPE = 0;
     public static int VALUE = 1;
+    public static int INDEX = 2;
     private Object[][] data;
     private static String[] columnNames = {
-            "index",
+            "type",
             "value",
+            "index",
     };
 
     @Override
@@ -23,6 +25,8 @@ public class ArrayInfoGUI extends AbstractTableModel implements Runnable {
         // Assumed (currently) that passed array has 2 columns
     public ArrayInfoGUI(Object[][] data) {
         this.data = data;
+        // Create a new data object with extra column with indices.
+        // Then, copy data back over, or see if you can do this before it happens?
     }
 
     public void updateTable() {
