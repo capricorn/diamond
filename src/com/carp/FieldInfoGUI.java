@@ -2,12 +2,7 @@ package com.carp;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.applet.Applet;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 
 public class FieldInfoGUI extends AbstractTableModel implements Runnable {
     private Object[][] data;
@@ -22,12 +17,13 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
 
     private static String[] columnNames = {
             "Index",
-            "Class",
+            "Class",    // Maybe set to actual object ref?
             "Type",
             "Field",
             "Value",
     };
 
+    // rename from app
     public FieldInfoGUI(Object app) {
         this.app = app;
         fields = app.getClass().getDeclaredFields();
@@ -40,30 +36,19 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
         return columnNames[column];
     }
 
-    /*
-    @Override
-    public boolean isCellEditable(int rowIndex, int colIndex) {
-        if (colIndex == VALUE) {
-            return true;
-        }
-        return false;
-    }
-    */
-
     private void updateTable() {
         for (int row = 0; row < getRowCount(); row++) {
             Field field = fields[row];
             field.setAccessible(true);
             // Set each row value, use as an index when viewing.
             setValueAt(row, row, INDEX);
-            setValueAt(app.getClass().getName(), row, CLASS_NAME);
+            setValueAt(field.getDeclaringClass(), row, CLASS_NAME);
             setValueAt(field.getName(), row, FIELD_NAME);
             setValueAt(field.getType().getName(), row, TYPE);
             try {
                 setValueAt((field.get(app) == null) ? "null" : field.get(app), row, VALUE);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
-                setValueAt("ERROR", row, VALUE);
             }
         }
     }
@@ -84,6 +69,10 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
     }
 
     public void setValueAt(Object value, int row, int col) {
+        if (value == null) {
+            return;
+        }
+
         data[row][col] = value;
         fireTableCellUpdated(row, col);
     }
@@ -120,6 +109,9 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
         System.out.println("Updating table..");
         while (true) {
             try {
+                // Is this really desirable behavior?
+                // How can you synchronize this with manual updates?
+                // Maybe pause updating table while editing is occurring?
                 Thread.sleep(1000);
                 updateTable();
             } catch (InterruptedException e) {
