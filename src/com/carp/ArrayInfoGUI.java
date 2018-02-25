@@ -30,7 +30,12 @@ public class ArrayInfoGUI extends AbstractTableModel implements Runnable {
         for (int row = 0; row < dataLen; row++) {
             Object value = Array.get(data, row);
             this.data[row][INDEX] = row;
-            this.data[row][TYPE] = value.getClass();
+            //this.data[row][TYPE] = value.getClass();
+            if (value != null) {
+                this.data[row][TYPE] = value.getClass();
+            } else {
+                this.data[row][TYPE] = "";
+            }
             this.data[row][VALUE] = value;
         }
     }
