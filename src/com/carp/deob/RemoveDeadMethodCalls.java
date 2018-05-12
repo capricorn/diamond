@@ -16,7 +16,7 @@ import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 
 
 public class RemoveDeadMethodCalls extends DeobTransformer {
-    RemoveDeadMethodCalls(Main.Deobfuscator deobfuscator) {
+    RemoveDeadMethodCalls(Deobfuscator deobfuscator) {
         super(deobfuscator);
     }
 

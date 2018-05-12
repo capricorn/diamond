@@ -29,7 +29,7 @@ public class WriteClass extends DeobTransformer {
         }
     }
 
-    WriteClass(Main.Deobfuscator deobfuscator) {
+    WriteClass(Deobfuscator deobfuscator) {
         super(deobfuscator);
     }
 

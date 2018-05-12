@@ -7,7 +7,7 @@ import org.objectweb.asm.tree.TryCatchBlockNode;
 import java.util.Iterator;
 
 public class RemoveEmptyExceptions extends DeobTransformer {
-    RemoveEmptyExceptions(Main.Deobfuscator deobfuscator) {
+    RemoveEmptyExceptions(Deobfuscator deobfuscator) {
         super(deobfuscator);
     }
 

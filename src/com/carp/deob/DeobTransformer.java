@@ -3,9 +3,9 @@ package com.carp.deob;
 import org.objectweb.asm.tree.ClassNode;
 
 abstract class DeobTransformer {
-    Main.Deobfuscator deobfuscator;
+    Deobfuscator deobfuscator;
 
-    DeobTransformer(Main.Deobfuscator deobfuscator) {
+    DeobTransformer(Deobfuscator deobfuscator) {
         this.deobfuscator = deobfuscator;
     }
 

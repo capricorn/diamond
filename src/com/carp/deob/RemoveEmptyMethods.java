@@ -10,7 +10,7 @@ import java.util.Iterator;
 import static org.objectweb.asm.Opcodes.ACC_ABSTRACT;
 
 public class RemoveEmptyMethods extends DeobTransformer {
-    RemoveEmptyMethods(Main.Deobfuscator deobfuscator) {
+    RemoveEmptyMethods(Deobfuscator deobfuscator) {
         super(deobfuscator);
     }
 
