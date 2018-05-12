@@ -7,10 +7,8 @@ import java.util.Scanner;
 
 public class GamepackParameters {
     private Hashtable<String, String> gamepackParams = new Hashtable<>();
-    // Will change update-to-update
-    private static String DEFAULT_WORLD = "8";
 
-    public GamepackParameters() {
+    public GamepackParameters() throws IOException {
         try (Scanner paramInput = new Scanner(new URL("http://oldschool5.runescape.com/jav_config.ws").openStream())) {
             while (paramInput.hasNext()) {
                 /*
@@ -31,9 +29,6 @@ public class GamepackParameters {
                     gamepackParams.put(type, param.substring(param.indexOf("=")+1));
                 }
             }
-            System.out.println(gamepackParams);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to retrieve parameters from site.");
         }
     }
 
@@ -43,10 +38,6 @@ public class GamepackParameters {
 
     public String getInitialJar() {
         return get("initial_jar");
-    }
-
-    public int getDefaultWorld() {
-        return Integer.parseInt(get(DEFAULT_WORLD));
     }
 
     public int getWindowWidth() {
