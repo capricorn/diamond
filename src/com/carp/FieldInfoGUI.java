@@ -2,6 +2,10 @@ package com.carp;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 public class FieldInfoGUI extends AbstractTableModel implements Runnable {
@@ -92,6 +96,20 @@ public class FieldInfoGUI extends AbstractTableModel implements Runnable {
     // Still have to call start()
     public void run() {
         JFrame frame = new JFrame("Field Info");
+        JToolBar toolBar = new JToolBar("x", JToolBar.HORIZONTAL);
+        toolBar.setFloatable(false);
+        JButton memDumpButton = new JButton("Memory Dump");
+        // Will 'break' when clicking other classes
+        // requires a global applet object be shared for every field gui instance
+        memDumpButton.addActionListener(e -> {
+            try {
+                new MemoryDump(app, "client").writeStringList("/tmp/strings.txt");
+            } catch (IOException ex) {
+            }
+            });
+        toolBar.add(memDumpButton);
+
+        frame.add(toolBar, BorderLayout.NORTH);
 
         updateTable();
         //frame.add(new JTable(data, columnNames));
