@@ -1,8 +1,20 @@
 package com.carp;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Formatter;
 
 public class Util {
+    public static byte[] readInputStream(InputStream input) throws IOException {
+        ByteArrayOutputStream classData = new ByteArrayOutputStream();
+        int b;
+        while ((b = input.read()) != -1) {
+            classData.write(b);
+        }
+        return classData.toByteArray();
+    }
+
     public static void prettyDownload(double progress, double goal, int step, String filename) {
         if (progress % step == 0) {
             StringBuilder progressStr = new StringBuilder();
