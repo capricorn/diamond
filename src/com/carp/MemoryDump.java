@@ -1,5 +1,8 @@
 package com.carp;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.HashSet;
@@ -36,6 +39,31 @@ public class MemoryDump {
             System.out.println(node.path + ":" + node.value);
         }
     }
+
+    private void writeNodeList(LinkedList<MemoryNode> list, String filename) throws IOException {
+        try (FileWriter output = new FileWriter(new File(filename))) {
+            for (MemoryNode node : list) {
+                output.write(node.path + ":" + node.value + "\n");
+            }
+        }
+    }
+
+    public void writeStringList(String filename) throws IOException {
+        writeNodeList(stringList, filename);
+    }
+
+    public void writeIntegerList(String filename) throws IOException {
+        writeNodeList(integerList, filename);
+    }
+
+    public void writeFloatList(String filename) throws IOException {
+        writeNodeList(floatList, filename);
+    }
+
+    public void writeNullList(String filename) throws IOException {
+        writeNodeList(nullList, filename);
+    }
+
     public void printStringList() {
         printNodeList(stringList);
     }
