@@ -1,7 +1,6 @@
 package com.carp;
 
 import com.sun.jdi.Bootstrap;
-import com.sun.jdi.ThreadReference;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.AttachingConnector;
 import com.sun.jdi.connect.Connector;
@@ -33,33 +32,33 @@ public class DiamondAPI {
         }
     };
 
-    private DiamondAPI(Applet app, GamepackParameters gamepackParams) {
-        this.app = app;
-        this.gamepackParams = gamepackParams;
+    public DiamondAPI(boolean debug) {
+        try {
+            gamepackParams = new GamepackParameters();
+            String jar = gamepackParams.getInitialJar();
+            app = new Loader(jar).getAppletInstance();
+
+            if (debug) {
+                new Thread(new FieldInfoGUI(app)).start();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to initialize API");
+        }
     }
 
     public Applet getApplet() {
         return this.app;
     }
 
-    public static DiamondAPI init() {
-        try {
-            GamepackParameters gamepackParams = new GamepackParameters();
-            Applet client = (Applet) new Loader(gamepackParams.getInitialJar()).loadClass("client").newInstance();
-            return new DiamondAPI(client, gamepackParams);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize API");
-        }
-    }
-
-    public void runClient() {
-        // Could probably just be integrated here..
+    public void run() {
         DiamondClient.run(app, gamepackParams);
     }
 
     private Object getHook(String key) {
         String hookPath[] = hookMap.get(key).split("\\.");
         Object object = app;
+
         for (String hookObj : hookPath) {
             try {
                 Integer arrayIndex = Integer.parseInt(hookObj);
@@ -83,6 +82,7 @@ public class DiamondAPI {
         return (String) getHook("current_world");
     }
 
+    // Needs a custom data structure
     public int[] getCurrentStats() {
         return (int[]) getDeclaredField(app, "ie");
     }
@@ -106,16 +106,6 @@ public class DiamondAPI {
         return (String) getHook("cc_owner");
     }
 
-    private void setDeclaredField(Object parent, String field, Object value) {
-        try {
-            Field f = parent.getClass().getDeclaredField(field);
-            f.setAccessible(true);
-            f.set(parent, value);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
     private Object getDeclaredField(Object parent, String field) {
         try {
             Field f = parent.getClass().getDeclaredField(field);
@@ -124,24 +114,6 @@ public class DiamondAPI {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
             return null;
-        }
-    }
-    // Used for examining the client tree at a given state.
-    private void pauseWorkingThreads(VirtualMachine vm) {
-        try {
-            for (ThreadReference thread : vm.allThreads()) {
-                if (!thread.name().equals("Diamond") && !thread.name().equals("JDI Target VM Interface")) {
-                    thread.suspend();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void resumeWorkingThreads(VirtualMachine vm) {
-        for (ThreadReference thread : vm.allThreads()) {
-            thread.resume();
         }
     }
 
