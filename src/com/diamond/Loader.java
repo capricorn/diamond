@@ -25,6 +25,10 @@ public class Loader extends ClassLoader {
         return (Applet) loadClass("client").newInstance();
     }
 
+    public byte[] getClassBytes(String name) {
+        return gamepackClassBytes.get(name);
+    }
+
     public Class findClass(String name) {
         try {
             if (gamepackClasses.contains(name)) {

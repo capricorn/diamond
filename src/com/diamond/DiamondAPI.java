@@ -19,6 +19,7 @@ public class DiamondAPI {
     private Applet app;
     private GamepackParameters gamepackParams;
     private static int HP_INDEX = 3;
+    private int version = 0;
     private static HashMap<String, String> hookMap = new HashMap<String, String>() {
         {
             put("cc_owner", "np");
@@ -36,7 +37,9 @@ public class DiamondAPI {
         try {
             gamepackParams = new GamepackParameters();
             String jar = gamepackParams.getInitialJar();
-            app = new Loader(jar).getAppletInstance();
+            Loader loader = new Loader(jar);
+            version = GamepackVersion.getVersion(loader.getClassBytes("client"));
+            app = loader.getAppletInstance();
 
             if (debug) {
                 new Thread(new FieldInfoGUI(app)).start();
@@ -45,6 +48,10 @@ public class DiamondAPI {
             e.printStackTrace();
             throw new RuntimeException("Failed to initialize API");
         }
+    }
+
+    public int getGamepackVersion() {
+        return version;
     }
 
     public Applet getApplet() {

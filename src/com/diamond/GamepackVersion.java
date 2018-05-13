@@ -12,23 +12,21 @@ public class GamepackVersion {
     public static void main(String[] args) {
         for (JavaClass jc : new JarSearch("/tmp/tmp.jar").getClasses()) {
             if (jc.getClassName().equals("client")) {
-                System.out.println("Version: " + getVersion(jc));
+                System.out.println("Version: " + getVersion(jc.getBytes()));
             }
         }
     }
 
-    private static int getVersion(JavaClass clientClass) {
+    public static int getVersion(byte[] clazz) {
         ClassNode client = new ClassNode();
-        ClassReader cr = new ClassReader(clientClass.getBytes());
+        ClassReader cr = new ClassReader(clazz);
         cr.accept(client, 0);
 
         for (MethodNode method : client.methods) {
             if (method.name.equals("init")) {
                 AbstractInsnNode lastOp =  method.instructions.getLast();
-                System.out.println("Last instruction: " + lastOp.getOpcode());
                 while (lastOp.getPrevious() != null && lastOp.getOpcode() != Opcodes.RETURN) {
                     lastOp = lastOp.getPrevious();
-                    System.out.println(lastOp.getOpcode());
                 }
                 if (lastOp.getOpcode() == Opcodes.RETURN) {
                     // Anyway to utilize descriptor?
