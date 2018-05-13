@@ -1,4 +1,4 @@
-package com.carp;
+package com.diamond;
 
 public class Main {
     public static void main(String[] args) {

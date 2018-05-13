@@ -1,4 +1,4 @@
-package com.carp.deob;
+package com.diamond.deob;
 
 
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import static com.carp.deob.Util.countArguments;
+import static com.diamond.deob.Util.countArguments;
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;

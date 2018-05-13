@@ -1,4 +1,4 @@
-package com.carp.deob;
+package com.diamond.deob;
 
 import java.util.HashMap;
 import java.util.Map;

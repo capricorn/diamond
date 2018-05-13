@@ -1,4 +1,4 @@
-package com.carp;
+package com.diamond;
 
 import java.io.File;
 import java.io.FileWriter;

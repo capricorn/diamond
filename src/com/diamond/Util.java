@@ -1,4 +1,4 @@
-package com.carp;
+package com.diamond;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -1,14 +1,9 @@
-package com.carp;
+package com.diamond;
 
 
 import com.sun.jdi.Field;
-import com.sun.jdi.ObjectReference;
-import com.sun.jdi.PrimitiveValue;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.event.*;
-import com.sun.jdi.request.AccessWatchpointRequest;
-import com.sun.jdi.request.MethodEntryRequest;
-import com.sun.jdi.request.ModificationWatchpointRequest;
 
 public class VMEventThread implements Runnable {
     EventQueue queue;

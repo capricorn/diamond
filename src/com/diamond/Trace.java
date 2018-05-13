@@ -1,4 +1,4 @@
-package com.carp;
+package com.diamond;
 
 import com.sun.jdi.Field;
 import com.sun.jdi.VirtualMachine;

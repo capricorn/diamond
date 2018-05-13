@@ -1,4 +1,4 @@
-package com.carp;
+package com.diamond;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;

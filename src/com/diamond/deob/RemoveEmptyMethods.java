@@ -1,4 +1,4 @@
-package com.carp.deob;
+package com.diamond.deob;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;

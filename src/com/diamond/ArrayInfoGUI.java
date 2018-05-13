@@ -1,4 +1,4 @@
-package com.carp;
+package com.diamond;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;

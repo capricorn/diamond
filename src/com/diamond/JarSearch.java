@@ -1,4 +1,4 @@
-package com.carp;
+package com.diamond;
 
 import com.sun.org.apache.bcel.internal.classfile.ClassParser;
 import com.sun.org.apache.bcel.internal.classfile.JavaClass;

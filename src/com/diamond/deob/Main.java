@@ -1,4 +1,4 @@
-package com.carp.deob;
+package com.diamond.deob;
 
 public class Main {
     public static void main(String[] args) {
