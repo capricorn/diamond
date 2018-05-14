@@ -8,20 +8,12 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
-// How should this work for a jar though?
-// Perhaps all operations should be performed on every class
-// of the given jar, but internal state maintained for things changed,
-// such as a list of removed methods, etc
-// utilize java streams when traversing, make each special deob part
-// have a functional interface for calling?
-// have operations that mark objects,
-// and operations that operate on marked objects
-// perhaps utilize a classloader and just pass class names
-// initialize a classnode for every class?
 public class Deobfuscator {
-    private ArrayList<ClassNode> classes = new ArrayList<>();
+    private HashMap<String, ClassNode> classes = new HashMap<>();
+    HashSet<String> blacklistedClasses = new HashSet<>();
     HashSet<String> markedMethods = new HashSet<>();
     Loader loader;
 
@@ -37,21 +29,33 @@ public class Deobfuscator {
             ClassReader cr = new ClassReader(jc.getBytes());
 
             cr.accept(cn, 0);
-            classes.add(cn);
+            classes.put(jc.getClassName(), cn);
         }
     }
 
     // Could have method return this, reduce some redundancy
     private void transform(DeobTransformer operation) {
-        for (ClassNode clazz : classes) {
+        for (ClassNode clazz : classes.values()) {
             operation.run(clazz);
             // Add a call that handles clearing state
             // operation.updateState()?
         }
     }
 
+    private void transform(DeobTransformer operation, String clazz) {
+        operation.run(classes.get(clazz));
+    }
+
     public void write() {
         transform(new WriteClass(this));
+    }
+
+    // How to chain for deleting unused classes ?
+    public Deobfuscator removeUnusedClasses() {
+        markedMethods.addAll(classes.keySet());
+        transform(new RemoveUnusedClasses(this), "client");
+        markedMethods.clear();
+        return this;
     }
 
     public Deobfuscator removeCallsToMarkedMethods() {
