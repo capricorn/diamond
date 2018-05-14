@@ -3,6 +3,10 @@ package com.diamond.deob;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class WriteClass extends DeobTransformer {
     private class SpecialClassWriter extends ClassWriter {
         public SpecialClassWriter(int flags) {
@@ -35,8 +39,17 @@ public class WriteClass extends DeobTransformer {
 
     @Override
     void run(ClassNode clazz) {
-        System.out.println("Writing: " + clazz.name);
-        SpecialClassWriter cw = new SpecialClassWriter(0);
-        clazz.accept(cw);
+        if (deobfuscator.blacklistedClasses.contains(clazz.name)) {
+            System.out.println("Ignoring class (blacklisted): " + clazz.name);
+        } else {
+            System.out.println("Writing: " + clazz.name);
+            SpecialClassWriter cw = new SpecialClassWriter(0);
+            clazz.accept(cw);
+            try (FileOutputStream out = new FileOutputStream(new File("/tmp/out/" + clazz.name + ".class"))) {
+                out.write(cw.toByteArray());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
