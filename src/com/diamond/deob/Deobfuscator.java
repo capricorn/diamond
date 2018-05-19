@@ -4,7 +4,10 @@ import com.diamond.JarSearch;
 import com.diamond.Loader;
 import com.sun.org.apache.bcel.internal.classfile.JavaClass;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +51,25 @@ public class Deobfuscator {
 
     public void write() {
         transform(new WriteClass(this));
+    }
+
+    public Deobfuscator markUsedFields() {
+        for (ClassNode clazz : classes.values()) {
+            for (MethodNode methods : clazz.methods) {
+                for (AbstractInsnNode insn : methods.instructions.toArray()) {
+                    if (insn instanceof FieldInsnNode) {
+                        FieldInsnNode field = ((FieldInsnNode) insn);
+                        markedMethods.add(field.owner + "." + field.name + field.desc);
+                    }
+                }
+            }
+        }
+        return this;
+    }
+
+    public Deobfuscator removeUnusedFields() {
+        transform(new RemoveUnusedFields(this));
+        return this;
     }
 
     // How to chain for deleting unused classes ?
