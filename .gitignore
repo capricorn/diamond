@@ -2,6 +2,9 @@
 *.jar
 META-INF/
 out/
-.idea/
 *.iml
 Test.java
+target/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/libraries

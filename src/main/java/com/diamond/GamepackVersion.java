@@ -1,6 +1,6 @@
 package com.diamond;
 
-import com.sun.org.apache.bcel.internal.classfile.JavaClass;
+import org.apache.bcel.classfile.JavaClass;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;

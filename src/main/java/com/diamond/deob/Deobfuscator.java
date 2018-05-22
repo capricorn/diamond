@@ -2,7 +2,7 @@ package com.diamond.deob;
 
 import com.diamond.JarSearch;
 import com.diamond.Loader;
-import com.sun.org.apache.bcel.internal.classfile.JavaClass;
+import org.apache.bcel.classfile.JavaClass;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
