@@ -48,12 +48,12 @@ public class LoaderStub extends JFrame implements AppletStub, AppletContext {
     }
 
     public String getParameter(String name) {
-        System.out.printf("Getting parameter: %s (%s)\n", name, params.get(name));
+        System.out.printf("Getting parameter: %2s (%s)\n", name, params.get(name));
         return params.get(name);
     }
 
     public void appletResize(int width, int height) {
-        System.out.printf("Resizing applet: %dx%d ", width, height);
+        System.out.printf("Resizing applet: %dx%d\n", width, height);
         setSize(width, height);
     }
 
