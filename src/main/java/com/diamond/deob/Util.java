@@ -1,6 +1,17 @@
 package com.diamond.deob;
 
+import org.apache.bcel.Const;
+import org.apache.bcel.classfile.ClassParser;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.JavaClass;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.MethodNode;
+
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 
 import static org.objectweb.asm.Opcodes.*;
@@ -193,4 +204,42 @@ public class Util {
             // wide?
         }
     };
+
+    // Just remember to ignore already visited.
+    public static HashSet<String> getClassRefs(String className) {
+        try {
+            HashSet<String> refs = new HashSet<>();
+            JavaClass jc = new ClassParser("/tmp/gp/" + className + ".class").parse();
+            for (Constant con : jc.getConstantPool().getConstantPool()) {
+                if (con == null) {
+                    continue;
+                }
+                if (con.getTag() == Const.CONSTANT_Class) {
+                    String refClassName = (String) ((ConstantClass) con).getConstantValue(jc.getConstantPool());
+                    if (!className.equals(refClassName) &&
+                            !refClassName.startsWith("java") && !refClassName.startsWith("[") &&
+                            !refClassName.startsWith("netscape")) {
+                        refs.add(refClassName);
+                    }
+                }
+            }
+            return refs;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+    public static void removeMethod(ClassNode clazz, String methodDescriptor) {
+        Iterator<MethodNode> methods = clazz.methods.iterator();
+
+        while (methods.hasNext()) {
+            MethodNode method = methods.next();
+
+            if ((clazz.name + "." + method.name + method.desc).equals(methodDescriptor)) {
+                methods.remove();
+                return;
+            }
+        }
+    }
 }

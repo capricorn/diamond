@@ -13,11 +13,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Deobfuscator {
     private HashMap<String, ClassNode> classes = new HashMap<>();
     HashSet<String> blacklistedClasses = new HashSet<>();
-    HashSet<String> markedMethods = new HashSet<>();
+    //HashSet<String> markedMethods = new HashSet<>();
+    HashMap<String, Integer> markedMethods = new HashMap<>();
     Loader loader;
 
     Deobfuscator(String jarFile) {
@@ -53,6 +55,57 @@ public class Deobfuscator {
         transform(new WriteClass(this));
     }
 
+    public Deobfuscator markedUsedClasses() {
+        LinkedList<String> queue = new LinkedList<>();
+        HashSet<String> visited = new HashSet<>();
+
+        queue.add("client");
+        visited.add("client");
+        addToCounter("client");
+
+        while (!queue.isEmpty()) {
+            String name = queue.removeFirst();
+
+            // Obtain neighbors
+            HashSet<String> refs = Util.getClassRefs(name);
+            // Count every occurrence == linkage count
+            for (String ref: refs) {
+                addToCounter(ref);
+            }
+            // Remove neighbors we've already visited
+            refs.removeAll(visited);
+            // Add new neighbors to queue for processing
+            queue.addAll(refs);
+            // Mark new references as visited
+            visited.addAll(refs);
+        }
+        return this;
+    }
+
+    protected void addToCounter(String item) {
+        if (!markedMethods.containsKey(item)) {
+            markedMethods.put(item, 1);
+            return;
+        }
+        markedMethods.put(item, markedMethods.get(item)+1);
+    }
+
+    protected int removeFromCounter(String item) {
+        if (!markedMethods.containsKey(item)) {
+            return -1;
+        }
+
+        int count = markedMethods.get(item) - 1;
+        if (count == 0) {
+            markedMethods.remove(item);
+            return 0;
+        }
+
+        markedMethods.put(item, count);
+        return count;
+    }
+
+    /*
     public Deobfuscator markUsedFields() {
         for (ClassNode clazz : classes.values()) {
             for (MethodNode methods : clazz.methods) {
@@ -66,25 +119,31 @@ public class Deobfuscator {
         }
         return this;
     }
+    */
 
+    /*
     public Deobfuscator removeUnusedFields() {
         transform(new RemoveUnusedFields(this));
         return this;
     }
+    */
 
     // How to chain for deleting unused classes ?
     public Deobfuscator removeUnusedClasses() {
-        markedMethods.addAll(classes.keySet());
-        transform(new RemoveUnusedClasses(this), "client");
+        //markedMethods.addAll(classes.keySet());
+        //transform(new RemoveUnusedClasses(this), "client");
+        transform(new RemoveUnusedClasses(this));
         markedMethods.clear();
         return this;
     }
 
+    /*
     public Deobfuscator removeCallsToMarkedMethods() {
         transform(new RemoveDeadMethodCalls(this));
         markedMethods.clear();  // May not necessarily clear; may create new marked methods
         return this;
     }
+    */
 
     public Deobfuscator removeEmptyExceptions() {
         transform(new RemoveEmptyExceptions(this));

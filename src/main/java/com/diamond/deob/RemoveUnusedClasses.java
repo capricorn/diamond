@@ -16,39 +16,24 @@ public class RemoveUnusedClasses extends DeobTransformer {
         super(deobfuscator);
     }
 
-    // Assume this transform is only performed on a single class (client.class)
-    @Override
-    void run(ClassNode clazz) {
-        deobfuscator.markedMethods.remove(clazz.name);
-        LinkedList<String> queue = new LinkedList<>();
-        HashSet<String> visited = new HashSet<>();
-        visited.add(clazz.name);
-        queue.add(clazz.name);
-
-        while (!queue.isEmpty()) {
-            try {
-                String className = queue.removeFirst();
-                // Prefer to find a way around loading this from disk again
-                JavaClass jc = new ClassParser("/tmp/gp/" + className + ".class").parse();
-                for (Constant con : jc.getConstantPool().getConstantPool()) {
-                    if (con == null) {
-                        continue;
-                    }
-                    if (con.getTag() == Const.CONSTANT_Class) {
-                        String refClassName = (String) ((ConstantClass) con).getConstantValue(jc.getConstantPool());
-                        if (!className.equals(refClassName) && !visited.contains(refClassName) &&
-                                !refClassName.startsWith("java") && !refClassName.startsWith("[") &&
-                                !refClassName.startsWith("netscape")) {
-                            queue.add(refClassName);
-                            visited.add(refClassName);
-                            deobfuscator.markedMethods.remove(refClassName);
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+    private void removeUnusedClass(String name) {
+        deobfuscator.blacklistedClasses.add(name);
+        HashSet<String> refs = Util.getClassRefs(name);
+        for (String ref : refs) {
+            if (deobfuscator.removeFromCounter(ref) == 0) {
+                System.out.println("\tFound newly unused class: " + ref);
+                removeUnusedClass(ref);
             }
         }
-        deobfuscator.blacklistedClasses.addAll(deobfuscator.markedMethods);
+    }
+
+    @Override
+    void run(ClassNode clazz) {
+        if (!deobfuscator.markedMethods.containsKey(clazz.name)) {
+            System.out.println("Found unused class: " + clazz.name);
+
+            // Modify BFS to correctly track count
+            removeUnusedClass(clazz.name);
+        }
     }
 }

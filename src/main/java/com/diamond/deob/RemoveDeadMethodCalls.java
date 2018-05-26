@@ -22,6 +22,7 @@ public class RemoveDeadMethodCalls extends DeobTransformer {
 
     @Override
     void run(ClassNode clazz) {
+        /*
         if (deobfuscator.markedMethods.isEmpty()) {
             return;
         }
@@ -83,5 +84,6 @@ public class RemoveDeadMethodCalls extends DeobTransformer {
                 }
             }
         }
+        */
     }
 }

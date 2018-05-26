@@ -16,6 +16,7 @@ public class RemoveEmptyMethods extends DeobTransformer {
 
     @Override
     public void run(ClassNode clazz) {
+        /*
         Iterator<MethodNode> methods = clazz.methods.iterator();
         while (methods.hasNext()) {
             MethodNode method = methods.next();
@@ -44,5 +45,6 @@ public class RemoveEmptyMethods extends DeobTransformer {
                 break;
             }
         }
+        */
     }
 }

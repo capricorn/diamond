@@ -13,6 +13,7 @@ public class RemoveUnusedFields extends DeobTransformer {
 
     @Override
     void run(ClassNode clazz) {
+        /*
         Iterator<FieldNode> fields = clazz.fields.iterator();
         while (fields.hasNext()) {
             FieldNode field = fields.next();
@@ -21,5 +22,6 @@ public class RemoveUnusedFields extends DeobTransformer {
                 fields.remove();
             }
         }
+        */
     }
 }
