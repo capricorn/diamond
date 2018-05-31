@@ -12,7 +12,7 @@ public class GamepackVersion {
     public static void main(String[] args) {
         for (JavaClass jc : new JarSearch("/tmp/tmp.jar").getClasses()) {
             if (jc.getClassName().equals("client")) {
-                System.out.println("Version: " + getVersion(jc.getBytes()));
+                System.out.println(getVersion(jc.getBytes()));
             }
         }
     }
