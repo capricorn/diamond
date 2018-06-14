@@ -20,6 +20,8 @@ public class Deobfuscator {
     HashSet<String> blacklistedClasses = new HashSet<>();
     //HashSet<String> markedMethods = new HashSet<>();
     HashMap<String, Integer> markedMethods = new HashMap<>();
+    HashMap<String, LinkedList<ClassNode>> supers = new HashMap<>();
+    HashMap<String, LinkedList<ClassNode>> interfaces = new HashMap<>();
     Loader loader;
 
     Deobfuscator(String jarFile) {
@@ -34,6 +36,27 @@ public class Deobfuscator {
             ClassReader cr = new ClassReader(jc.getBytes());
 
             cr.accept(cn, 0);
+
+            // interfaces implemented by cn (including those from outside the gamepack)
+            for (String itf : cn.interfaces) {
+                LinkedList<ClassNode> implementors = interfaces.get(itf);
+                if (implementors == null) {
+                    implementors = new LinkedList<>();
+                    interfaces.put(itf, implementors);
+                }
+                implementors.add(cn);
+            }
+
+            // supers implemented by cn (including those from outside the gamepack, except Object)
+            if (!cn.superName.equals("java/lang/Object")) {
+                LinkedList<ClassNode> inheritors = supers.get(cn.superName);
+                if (inheritors == null) {
+                    inheritors = new LinkedList<>();
+                    supers.put(cn.superName, inheritors);
+                }
+                inheritors.add(cn);
+            }
+
             classes.put(jc.getClassName(), cn);
         }
     }

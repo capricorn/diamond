@@ -1,5 +1,6 @@
 package com.diamond.deob;
 
+import com.sun.xml.internal.ws.org.objectweb.asm.Opcodes;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Constant;
@@ -32,7 +33,7 @@ public class RemoveUnusedClasses extends DeobTransformer {
         if (!deobfuscator.markedMethods.containsKey(clazz.name)) {
             System.out.println("Found unused class: " + clazz.name);
 
-            // Modify BFS to correctly track count
+            // Modify BFS to correctly track count (right now it's incorrect)
             removeUnusedClass(clazz.name);
         }
     }
