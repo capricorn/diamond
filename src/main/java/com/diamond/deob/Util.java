@@ -5,8 +5,8 @@ import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.JavaClass;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -241,5 +241,54 @@ public class Util {
                 return;
             }
         }
+    }
+
+    // Do some more research into streams, may make life easier
+    public static boolean classAssignsField(ClassNode clazz, String fieldDesc) {
+        for (MethodNode method : clazz.methods) {
+            for (AbstractInsnNode insn : method.instructions.toArray()) {
+                if (insn.getOpcode() == Opcodes.PUTFIELD || insn.getOpcode() == Opcodes.PUTSTATIC) {
+                    FieldInsnNode fieldInsn = (FieldInsnNode) insn;
+                    if ((fieldInsn.owner + "." + fieldInsn.name + ":" + fieldInsn.desc).equals(fieldDesc)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+    public static boolean classAccessesField(ClassNode clazz, String fieldDesc) {
+        for (MethodNode method : clazz.methods) {
+            for (AbstractInsnNode insn : method.instructions.toArray()) {
+                if (insn.getOpcode() == Opcodes.GETSTATIC || insn.getOpcode() == Opcodes.GETFIELD) {
+                    FieldInsnNode fieldInsn = (FieldInsnNode) insn;
+                    if ((fieldInsn.owner + "." + fieldInsn.name + ":" + fieldInsn.desc).equals(fieldDesc)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static String getFieldDescriptor(ClassNode owner, FieldNode field) {
+        return owner.name + "." + field.name + ":" + field.desc;
+    }
+
+    public static String getFieldDescriptor(FieldInsnNode fieldInsn) {
+        return fieldInsn.owner + "." + fieldInsn.name + ":" + fieldInsn.desc;
+    }
+
+    // A class will not contain a field in ClassNode.fields if it is inherited.
+    public static boolean classDefinesField(ClassNode clazz, String fieldDesc) {
+        for (FieldNode field : clazz.fields) {
+            if (getFieldDescriptor(clazz, field).equals(fieldDesc)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
