@@ -3,16 +3,11 @@ package com.diamond.deob;
 import com.diamond.JarSearch;
 import com.diamond.Loader;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.FieldInstruction;
-import org.apache.bcel.generic.GETSTATIC;
-import org.apache.bcel.generic.PUTFIELD;
-import org.apache.bcel.generic.PUTSTATIC;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -20,7 +15,6 @@ import java.util.LinkedList;
 public class Deobfuscator {
     HashMap<String, ClassNode> classes = new HashMap<>();
     HashSet<String> blacklistedClasses = new HashSet<>();
-    //HashSet<String> markedMethods = new HashSet<>();
     HashMap<String, Integer> markedMethods = new HashMap<>();
     HashMap<String, LinkedList<ClassNode>> supers = new HashMap<>();
     HashMap<String, LinkedList<ClassNode>> interfaces = new HashMap<>();
@@ -63,12 +57,9 @@ public class Deobfuscator {
         }
     }
 
-    // Could have method return this, reduce some redundancy
     private void transform(DeobTransformer operation) {
         for (ClassNode clazz : classes.values()) {
             operation.run(clazz);
-            // Add a call that handles clearing state
-            // operation.updateState()?
         }
     }
 
@@ -126,40 +117,15 @@ public class Deobfuscator {
     // A field is used if it is accessed, i.e. getstatic or getfield
     public Deobfuscator markUsedFields() {
         for (ClassNode clazz : classes.values()) {
-            // Write a utility method to provide a function to run on this (similar to map)
-            // Possibly look into streams
             for (MethodNode method : clazz.methods) {
                 for (AbstractInsnNode insn : method.instructions.toArray()) {
                     if (insn instanceof FieldInsnNode) {
-                        //FieldInsnNode fieldInsn = (FieldInsnNode) insn;
-
-                        //ClassNode fieldClass = classes.get(fieldInsn.owner);
-                        /*
-                        if (Util.classAccessesField(fieldClass, desc)) {
-                            mark(desc);
-                            mark(getDefiningClassName(fieldClass.name, fieldInsn.name + ":" + fieldInsn.desc));
-                        }
-                        */
                         FieldInsnNode field = (FieldInsnNode) insn;
-                        String desc = Util.getFieldDescriptor(field);
-                        /*
-                        if (field.owner.startsWith("java")) {
-                            continue;
-                        }
-                        */
                         // If a field is never accessed, then it's useless
-                        // What if we only mark the defining class of the field, since the inheritor fields
-                        // will never be seen?
                         if ((field.getOpcode() == Opcodes.GETSTATIC) || field.getOpcode() == Opcodes.GETFIELD) {
                             System.out.println("Field access: " + field.owner + "." + field.name + ":" + field.desc);
                             String defDesc = getDefiningClassName(field.owner, field.name + ":" + field.desc) + "." + field.name + ":" + field.desc;
                             mark(defDesc);
-                            /*
-                            mark(desc);
-                            mark(defDesc);
-                            */
-                            System.out.printf("Marking: (%s), (%s)\n", desc, defDesc);
-                            //markedMethods.put(field.owner + "." + field.name + ":" + field.desc, 0);
                         }
                     }
                 }

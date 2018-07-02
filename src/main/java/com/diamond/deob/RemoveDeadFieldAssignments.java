@@ -30,7 +30,6 @@ public class RemoveDeadFieldAssignments extends DeobTransformer {
                                 insns.add(new InsnNode(Opcodes.POP));
                             }
                         }
-                    // Have to properly remove stack instructions
                     } else if (fieldInsn.getOpcode() == Opcodes.PUTFIELD) {
                         if (deobfuscator.markedMethods.containsKey(desc)) {
                             System.out.println("Removing broken access to instance field: " + desc);
@@ -41,9 +40,7 @@ public class RemoveDeadFieldAssignments extends DeobTransformer {
                                 insns.add(new InsnNode(Opcodes.POP));
                             } else {
                                 insns.add(new InsnNode(Opcodes.POP2));
-                                //insns.add(new InsnNode(Opcodes.POP));
                             }
-                            //insns.add(new InsnNode(Opcodes.POP2));
                         }
                     }
                 }
