@@ -22,6 +22,7 @@ public class RemoveUnusedFields extends DeobTransformer {
                 fields.remove();
                 // Add descriptor for later removal
                 deobfuscator.markedMethods.put(desc, 0);
+                statistics++;
             } else {
                 // Once this transformer is finished, the only fields left marked are those that were removed.
                 // This makes it easier to remove any field assignments in the bytecode.

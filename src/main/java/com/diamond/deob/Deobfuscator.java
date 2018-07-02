@@ -135,8 +135,10 @@ public class Deobfuscator {
     }
 
     public Deobfuscator removeUnusedFields() {
-        transform(new RemoveUnusedFields(this));
+        RemoveUnusedFields unusedDeob = new RemoveUnusedFields(this);
+        transform(unusedDeob);
         transform(new RemoveDeadFieldAssignments(this));
+        System.out.printf("Removed %d fields.\n", unusedDeob.statistics);
         markedMethods.clear();
         return this;
     }
